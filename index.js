@@ -56,6 +56,12 @@ if (process.env.TOKEN || process.env.SLACK_TOKEN) {
     process.exit(1);
 }
 
+var apiai = require('botkit-middleware-apiai')({
+    token: process.env.APIAI_TOKEN
+});
+
+controller.middleware.receive.use(apiai.receive);
+
 
 /**
  * A demonstration for how to handle websocket events. In this case, just log when we have and have not
@@ -85,7 +91,9 @@ controller.on('bot_channel_join', function (bot, message) {
     bot.reply(message, "I'm here!")
 });
 
-controller.hears('hello', 'direct_message', function (bot, message) {
+//snippet to add api.ai intents
+controller.hears(['hello'], 'direct_message', apiai.hears, function (
+bot, message) {
     bot.reply(message, 'Hello!');
 });
 
